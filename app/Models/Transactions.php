@@ -13,8 +13,13 @@ class Transactions extends Model
     protected $table = 'transactions';
     protected $primaryKey = 'id';
     protected $fillable = [];
-    protected $appends = ['btn_delete', 'btn_edit', 'btn_show'];
+    protected $appends = ['btn_delete', 'btn_edit', 'btn_show', 'total_price_rupiah'];
 
+
+    public function getTotalPriceRupiahAttribute()
+    {
+        return 'Rp ' . number_format($this->total_price, 0, ',', '.');
+    }
 
     public function getBtnDeleteAttribute()
     {

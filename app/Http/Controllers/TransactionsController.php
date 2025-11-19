@@ -33,7 +33,9 @@ class TransactionsController extends DefaultController
                     ['name' => 'Trans Code', 'column' => 'transaction_code', 'order' => true],
                     ['name' => 'Product', 'column' => 'product_name', 'order' => true],
                     ['name' => 'Qty', 'column' => 'quantity', 'order' => true],
-                    ['name' => 'Total', 'column' => 'total_price', 'order' => true],
+                    ['name' => 'Total', 'column' => 'total_price_rupiah', 'order' => true, 'formatter' => function($value, $row) {
+                        return $row->total_price_rupiah;
+                    }],
                     ['name' => 'Created at', 'column' => 'created_at', 'order' => true],
                     ['name' => 'Updated at', 'column' => 'updated_at', 'order' => true],
         ];
@@ -44,6 +46,33 @@ class TransactionsController extends DefaultController
             'headers' => [ 
             ]
         ];
+    }
+
+    protected function defaultDataQuery()
+    {
+        $orderBy = request('order') ?? 'id';
+        $orderState = request('order_state') ?? 'DESC';
+        $search = request('search');
+
+        if ($orderBy === 'total_price_rupiah') {
+            $orderBy = 'total_price';
+        }
+
+        $query = $this->modelClass::query()
+            ->when($search, function($q) use ($search) {
+                foreach ($this->tableHeaders as $key => $th) {
+                    $column = $th['column'];
+                    if ($column === 'total_price_rupiah') $column = 'total_price';
+                    if ($key == 0) {
+                        $q->where($column, 'LIKE', "%$search%");
+                    } else {
+                        $q->orWhere($column, 'LIKE', "%$search%");
+                    }
+                }
+            })
+            ->orderBy($orderBy, $orderState);
+
+        return $query;
     }
 
     protected function fields($mode = "create", $id = '-')

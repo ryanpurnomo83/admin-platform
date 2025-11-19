@@ -27,7 +27,7 @@ class ProductsController extends DefaultController
     {
         $this->title = 'Products';
         $this->generalUri = 'products';
-        // $this->arrPermissions = [];
+        
         $this->actionButtons = ['btn_edit', 'btn_show', 'btn_delete'];
 
         $this->tableHeaders = [
